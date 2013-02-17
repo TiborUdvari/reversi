@@ -49,20 +49,6 @@ public class Joueur extends Othello.Joueur
 		
 		
 		// - Mettre à jour votre représentation du jeu en fonction du coup joué par l'adversaire
-		//currentState.executeMove(move, Helpers.enemyPlayer(playerID));
-		
-		if(playerID == GameState.BLUE)
-			{
-			System.out.println("PlayerID maps to blue");
-			}
-		else if(playerID == GameState.RED)
-			{
-			System.out.println("PlayerID maps to red");
-			}
-		else
-			{
-			System.out.println("Player ID is not mapped correctly");
-			}
 		
 		ReversiTools.applyMove(currentState.getBoard(),playerID, move);
 		

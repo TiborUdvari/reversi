@@ -59,7 +59,6 @@ public class GameState
 	@Override
 	protected Object clone() throws CloneNotSupportedException
 		{
-		
 		GameState clonedState = new GameState(currentPlayer, ReversiTools.deepCopy2DRegularArray(board), new Move(originatingMove.i, originatingMove.j));
 		return clonedState;
 		}

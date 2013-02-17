@@ -51,10 +51,7 @@ public class ReversiTools
 	
 	public static boolean isValid(int player, Move move, int board[][])
 		{
-		if(board[move.i][move.j] != GameState.EMPTY)
-			{
-			return false;
-			}
+		if (board[move.i][move.j] != GameState.EMPTY) { return false; }
 		
 		for(Move direction:GameState.arrDirections)
 			{
@@ -82,7 +79,6 @@ public class ReversiTools
 			}
 		return false;
 		}
-	
 	
 	public static void applyMove(GameState gameState, int player, Move move)
 		{
@@ -202,7 +198,6 @@ public class ReversiTools
 		move.j = temp;
 		}
 	
-	
 	private static final Map<Integer, String> myMap;
 	
 	static
@@ -215,7 +210,6 @@ public class ReversiTools
 		
 		myMap = Collections.unmodifiableMap(aMap);
 		}
-	
 	
 	public static int[][] deepCopy2DRegularArray(int[][] source)
 		{
@@ -239,15 +233,7 @@ public class ReversiTools
 	
 	public static Object[] max(GameState root, int depth)
 		{
-		int bestScore = -1;
-		if(depth == 0 || root.isFinal())
-			{
-			bestScore = root.eval();
-			}
-		else
-			{
-			
-			}
+		if (depth == 0 || root.isFinal()) { return new Object[] { root.eval(), null }; }
 		
 		int maxValue = Integer.MIN_VALUE;
 		Move maxOp = null;
@@ -255,17 +241,95 @@ public class ReversiTools
 		for(Move move:root.getOperators())
 			{
 			GameState newState = root.apply(move);
+			Object[] arrayEvalAndMove = max(newState, depth - 1);
+			int eval = (int)arrayEvalAndMove[0];
+			Move resultMove = (Move)arrayEvalAndMove[1];
 			
-			
-			
+			if (eval > maxValue)
+				{
+				maxValue = eval;
+				maxOp = resultMove;
+				}
 			}
 		
-		return new Object[] {bestScore, new Move(0,0)};
+		return new Object[] { maxValue, new Move(maxOp.i, maxOp.j) };
 		}
+	
+	public static Object[] minimax(GameState root, int depth, int minOrMax)
+		{
+		// minimax = 1 -> maximize
+		// minimax = -1 minimize
+		if (depth == 0 || root.isFinal()) { return new Object[] { root.eval(), null }; }
+		
+		int optValue = Integer.MAX_VALUE * minOrMax;
+		Move maxOp = null;
+		
+		for(Move move:root.getOperators())
+			{
+			GameState newState = root.apply(move);
+			Object[] arrayEvalAndMove = minimax(newState, depth - 1, -minOrMax);
+			int eval = (int)arrayEvalAndMove[0];
+			Move resultMove = (Move)arrayEvalAndMove[1];
+			
+			if (eval * minOrMax > optValue * minOrMax)
+				{
+				optValue = eval;
+				maxOp = resultMove;
+				}
+			}
+		
+		return new Object[] { optValue, new Move(maxOp.i, maxOp.j) };
+		}
+	
+	public static Move getMoveMinimax(GameState root, int depth)
+		{
+		//Computer starts so we maximize first
+		Object[] results = minimax(root, depth, 1);
+		return (Move)results[1];
+		}
+	
+	/*------------------------------------------------------------------*\
+	|*							Alpha Beta								*|
+	\*------------------------------------------------------------------*/
+	
 
 	
+	public static Object[] alphaBeta(GameState root, int depth, int minOrMax, int parentValue)
+		{
+		// minimax = 1 -> maximize
+		// minimax = -1 minimize
+		if (depth == 0 || root.isFinal()) { return new Object[] { root.eval(), null }; }
+		
+		int optValue = Integer.MAX_VALUE * minOrMax;
+		Move maxOp = null;
+		
+		for(Move move:root.getOperators())
+			{
+			GameState newState = root.apply(move);
+			Object[] arrayEvalAndMove = alphaBeta(newState, depth - 1, -minOrMax, optValue);
+			int eval = (int)arrayEvalAndMove[0];
+			Move resultMove = (Move)arrayEvalAndMove[1];
+			
+			if (eval * minOrMax > optValue * minOrMax)
+				{
+				optValue = eval;
+				maxOp = resultMove;
+				if (optValue * minOrMax > parentValue * minOrMax)
+					{
+					break;
+					}
+				}
+			}
+		
+		return new Object[] { optValue, new Move(maxOp.i, maxOp.j) };
+		}
+	
+	public static Move getMoveAlphaBeta(GameState root, int depth, int parentValue)
+		{
+		// Computer makes first move, and tries to maximize so minOrMax = 1
+		// ParentValue is not calculated 
+		Object[] results = alphaBeta(root, depth, 1, parentValue);
+		return (Move)results[1];
+		}
 	
 	}
-
-
-
