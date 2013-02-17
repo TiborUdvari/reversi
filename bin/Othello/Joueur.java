@@ -1,30 +1,27 @@
-
-package Othello;
+package  Othello ;
 
 // *************************************************
 //  Classe implementant l'algorithme de Jeu OTHELLO
 //  ************************************************
 
 public class Joueur
-	{
-	
+{
+
 	// 0 : joue les rouges, 1 : joue les bleus
 	protected int playerID;
-	protected int depth; // Profondeur alpha-beta
+	protected int depth ;		// Profondeur alpha-beta
 	protected int size = 8; // taille du plateau de jeu
 	
 	// ******************************************************
 	//   Constructeur appele par l'Applet Othello
 	// ******************************************************
-	public Joueur()
-		{
-		}
+    public Joueur() { }
 	
-	public Joueur(int depth, int playerID)
-		{
-		this.depth = depth;
-		this.playerID = playerID;
-		}
+	public Joueur(int depth, int playerID) 
+	{  
+	  this.depth = depth ; 
+	  this.playerID = playerID ;
+	}
 	
 	// ******************************************************
 	//   M\'ethode appel\'ee \`a chaque coup du Joueur Adverse
@@ -34,7 +31,8 @@ public class Joueur
 	//			retourne null si aucun coup n'est possible.
 	// ******************************************************
 	public Move nextPlay(Move move)
-		{
-		return null;
-		}
-	}
+	{
+	    return null ;
+	}			
+}
+		

@@ -5,7 +5,6 @@ simplement lus à la console!
 */
 
 // Votre version sera dans Participants.<VosNoms>
-
 package Participants.Console;
 
 // Pour l'interopérabilité: il faut une représentation commune des coups!
@@ -15,22 +14,19 @@ import Othello.Move;
 import java.util.Scanner;
 
 // Vous devrez étendre Othello.Joueur pour implémenter votre propre joueur...
-public class Joueur extends Othello.Joueur
-	{
-	
+public class Joueur extends Othello.Joueur {
+
 	// depth: profondeur alpha-beta
 	// playerID: 0 = rouge, 1 = bleu
-	public Joueur(int depth, int playerID)
-		{
+	public Joueur(int depth, int playerID) {
 		super();
-		}
+	}
 	
 	Scanner stdin = new Scanner(System.in);
-	
+
 	// Méthode appelée à chaque fois que vous devez jouer un coup.
 	// move est le coup joué par l'adversaire
-	public Move nextPlay(Move move)
-		{
+	public Move nextPlay(Move move) {
 		// Ici, vous devrez
 		// - Mettre à jour votre représentation du jeu en fonction du coup joué par l'adversaire
 		// - Décider quel coup jouer (alpha-beta!!)
@@ -38,17 +34,17 @@ public class Joueur extends Othello.Joueur
 		// - Retourner le coup choisi
 		// Mais ici, on se contente de lire à la console:
 		Move result = null;
-		if (move != null) System.out.println("Coup adverse: " + move.i + ", " + move.j);
+		if (move != null) 
+			System.out.println("Coup adverse: " + move.i + ", " + move.j);
 		System.out.println("Votre coup: ");
 		System.out.print("Colonne (-1 si aucun coup possible): ");
 		int i = stdin.nextInt();
-		if (i != -1)
-			{
+		if (i != -1) {
 			System.out.print("Ligne: ");
-			int j = stdin.nextInt();
-			result = new Move(i, j);
-			}
-		return result;
+			int j =  stdin.nextInt();
+			result = new Move(i,j);
 		}
-	
+		return result;
 	}
+
+}

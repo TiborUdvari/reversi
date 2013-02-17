@@ -1,5 +1,4 @@
-
-package Othello;
+package Othello ;
 
 // ****************************************************
 //  Classe pour l'échange des coups entre les joueurs.
@@ -7,26 +6,12 @@ package Othello;
 // ****************************************************
 
 public class Move
-	{
+{
+	// Attributs de la classe ;
+	public int i,j ;
 	
-	/*------------------------------------------------------------------*\
-	|*							Constructeurs							*|
-	\*------------------------------------------------------------------*/
-	
-	public Move()
-		{
-		}
-	
-	public Move(int i, int j)
-		{
-		this.i = i;
-		this.j = j;
-		}
-	
-	/*------------------------------------------------------------------*\
-	|*							Attributs Private						*|
-	\*------------------------------------------------------------------*/
-	
-	public int i, j;
-	
-	}
+	// Constructeurs de la Classe ;
+	public Move () {}
+	public Move (int i, int j)
+	{ this.i = i ; this.j = j ; }
+}
