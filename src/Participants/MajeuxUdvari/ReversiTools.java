@@ -94,7 +94,7 @@ public class ReversiTools
 	 */
 	public static void applyMove(int[][] board, int player, Move move)
 		{
-		if(move == null)
+		if (move == null)
 			{
 			//TODO check this 
 			System.out.println("Move was empty");
@@ -208,6 +208,7 @@ public class ReversiTools
 		}
 	
 	private static final Map<Integer, String> myMap;
+	private static int[][] arrayPositionValues;
 	
 	static
 		{
@@ -218,6 +219,46 @@ public class ReversiTools
 		aMap.put(2, "_");
 		
 		myMap = Collections.unmodifiableMap(aMap);
+		
+		arrayPositionValues = new int[8][8];
+		arrayPositionValues[0][0] = 99;
+		arrayPositionValues[0][1] = -8;
+		arrayPositionValues[0][2] = 8;
+		arrayPositionValues[0][3] = 6;
+		
+		arrayPositionValues[1][0] = -8;
+		arrayPositionValues[1][1] = -24;
+		arrayPositionValues[1][2] = -4;
+		arrayPositionValues[1][3] = -3;
+		
+		arrayPositionValues[2][0] = 8;
+		arrayPositionValues[2][1] = -4;
+		arrayPositionValues[2][2] = 7;
+		arrayPositionValues[2][3] = 4;
+		
+		arrayPositionValues[3][0] = 6;
+		arrayPositionValues[3][1] = -3;
+		arrayPositionValues[3][2] = 4;
+		arrayPositionValues[3][3] = 0;
+		
+		for(int j = 0; j <= 3; j++)
+			{
+			
+			for(int i = 0; i <= 3; i++)
+				{
+				arrayPositionValues[7 - i][j] = arrayPositionValues[i][j];
+				}
+			}
+		
+		for(int i = 0; i <= 7; i++)
+			{
+			
+			for(int j = 0; j <= 3; j++)
+				{
+				arrayPositionValues[i][7 - j] = arrayPositionValues[i][j];
+				}
+			}
+		
 		}
 	
 	public static int[][] deepCopy2DRegularArray(int[][] source)
@@ -278,8 +319,6 @@ public class ReversiTools
 	|*							Alpha Beta								*|
 	\*------------------------------------------------------------------*/
 	
-
-	
 	public static Object[] alphaBeta(GameState root, int depth, int minOrMax, int parentValue)
 		{
 		// minimax = 1 -> maximize
@@ -317,6 +356,159 @@ public class ReversiTools
 		// ParentValue is not calculated 
 		Object[] results = alphaBeta(root, depth, 1, parentValue);
 		return (Move)results[1];
+		}
+	
+	/*------------------------------------------------------------------*\
+	|*						Evaluation functions		 				*|
+	\*------------------------------------------------------------------*/
+	
+	/*------------------------------------------------------------------*\
+	|*							Methodes Private						*|
+	\*------------------------------------------------------------------*/
+	
+	/**
+	 * Evaluates the state with a static table found here 
+	 * http://www.allaine.com/pages/pagesowiggli/sons.html
+	 * @return
+	 */
+	public static int evalWithStaticTable(int player, GameState gameState)
+		{
+		int[][] board = gameState.getBoard();
+		
+		int scoreRed = 0;
+		int scoreBlue = 0;
+		
+		for(int i = 0; i < 8; i++)
+			{
+			for(int j = 0; j < 8; j++)
+				{
+				
+				switch(board[i][j])
+					{
+					case GameState.RED:
+						scoreRed += arrayPositionValues[i][j];
+						break;
+					
+					case GameState.BLUE:
+						scoreBlue += arrayPositionValues[i][j];
+						break;
+					
+					}
+				
+				}
+			}
+		
+		return player == GameState.RED ? scoreRed - scoreBlue : scoreBlue - scoreRed;
+		}
+	
+	public static int evalWithFrontiere(int player, GameState gameState)
+		{
+		
+		int scoreRed = 0;
+		int scoreBlue = 0;
+		
+		int[][] board = gameState.getBoard();
+		
+		for(int i = 0; i < 8; i++)
+			{
+			for(int j = 0; j < 8; j++)
+				{
+				if (board[i][j] == GameState.EMPTY) continue;
+				if (isOnFrontiere(i, j, board))
+					{
+					switch(board[i][j])
+						{
+						case GameState.RED:
+							scoreRed++;
+							break;
+						
+						case GameState.BLUE:
+							scoreBlue++;
+							break;
+						
+						}
+					}
+				}
+			}
+		
+		return player == GameState.RED ? scoreRed - scoreBlue : scoreBlue - scoreRed;
+		}
+	
+	private static boolean isOnFrontiere(int i, int j, int[][] board)
+		{
+		
+		for(Move direction:GameState.arrDirections)
+			{
+			try
+				{
+				if (board[i + direction.i][j + direction.j] == GameState.EMPTY) { return true; }
+				}
+			catch (ArrayIndexOutOfBoundsException e)
+				{
+				//do nothing
+				}
+			}
+		
+		return false;
+		}
+	
+	
+	public static int evalDefinitiveCheckers(GameState gameState, int player)
+		{
+		
+		int scoreRed = 0;
+		int scoreBlue = 0;
+		
+		scoreRed += getFixedCheckersNumRec(gameState.getBoard(), GameState.RED, 0, 0, 5, 5, GameState.dirDownRight, 0);
+		scoreRed += getFixedCheckersNumRec(gameState.getBoard(), GameState.RED, 0, 7, 5, 5, GameState.dirDownLeft, 0);
+		scoreRed += getFixedCheckersNumRec(gameState.getBoard(), GameState.RED, 7, 7, 5, 5, GameState.dirUpLeft, 0);
+		scoreRed += getFixedCheckersNumRec(gameState.getBoard(), GameState.RED, 7, 0, 5, 5, GameState.dirUpRight, 0);
+
+		scoreBlue += getFixedCheckersNumRec(gameState.getBoard(), GameState.BLUE, 0, 0, 5, 5, GameState.dirDownRight, 0);
+		scoreBlue += getFixedCheckersNumRec(gameState.getBoard(), GameState.BLUE, 0, 7, 5, 5, GameState.dirDownLeft, 0);
+		scoreBlue += getFixedCheckersNumRec(gameState.getBoard(), GameState.BLUE, 7, 7, 5, 5, GameState.dirUpLeft, 0);
+		scoreBlue += getFixedCheckersNumRec(gameState.getBoard(), GameState.BLUE, 7, 0, 5, 5, GameState.dirUpRight, 0);
+		
+		return player == GameState.RED ? scoreRed - scoreBlue : scoreBlue - scoreRed;
+		}
+	
+	private static int getFixedCheckersNumRec(int[][] board, int player, int startI, int startJ, int limitX, int limitY, Move direction, int score)
+		{
+		
+		if(limitX < startI && limitY < startJ)
+			return 0;
+		
+		int incX = direction.i;
+		int incY = direction.j;
+		
+		for(int i = startI; i != limitX; i += incX)
+			{
+			if (board[i][startJ] == player)
+				{
+				score++;
+				}
+			else
+				{
+				limitX = i;
+				break;
+				}
+			}
+		
+		for(int j = startJ; j != limitY; j += incY)
+			{
+			if (board[startI][j] == player)
+				{
+				score++;
+				}
+			else
+				{
+				limitX = j;
+				break;
+				}
+			}
+		
+		return score + getFixedCheckersNumRec(board, player, startI + incX, startJ + incY, limitX, limitY, direction, score);
+		
 		}
 	
 	}

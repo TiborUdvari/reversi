@@ -119,6 +119,15 @@ public class ReversiToolsTest
 		boardSmallScenarioMD2[2][2] = GameState.BLUE;
 		}
 	
+	
+	@Test
+	public void testEvalDefinitive()
+		{
+		int expected = 0;
+		int result = ReversiTools.evalDefinitiveCheckers(gameState, GameState.RED);
+		assertEquals(expected, result);
+		}
+	
 	@Test
 	public void testMultipleDirectionScenarion2()
 		{
