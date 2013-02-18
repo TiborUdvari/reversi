@@ -1,12 +1,9 @@
 
 package Participants.MajeuxUdvari;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import Othello.Move;
-
-
 
 public class Joueur extends Othello.Joueur
 	{
@@ -23,8 +20,9 @@ public class Joueur extends Othello.Joueur
 	public Joueur(int depth, int playerID)
 		{
 		super();
-		currentState = new GameState();
+		currentState = new GameState(ReversiTools.flippedValue(playerID), playerID);
 		ReversiTools.printGameState(currentState);
+		System.out.println("Depth var is " + depth);
 		}
 	
 	Scanner stdin = new Scanner(System.in);
@@ -33,61 +31,51 @@ public class Joueur extends Othello.Joueur
 	|*							Methodes Public							*|
 	\*------------------------------------------------------------------*/
 	
-	
-
 	// Méthode appelée à chaque fois que vous devez jouer un coup.
 	// move est le coup joué par l'adversaire
 	public Move nextPlay(Move move)
 		{
-		
-		
+		if (move == null)
+			{
+			System.out.println("Got null move");
+			}
 		ReversiTools.fixMove(move);
-		System.out.println("Human : [" + move.i + "][" + move.j + "]");
+		
+		if (move != null)
+			{
+			System.out.println("Human : [" + move.i + "][" + move.j + "]");
+			
+			}
 		//System.out.println("Move from " + move.i + " to " + move.j);
 		// Ici, vous devrez
-		
-		
-		
 		// - Mettre à jour votre représentation du jeu en fonction du coup joué par l'adversaire
 		
-		ReversiTools.applyMove(currentState.getBoard(),playerID, move);
+		//currentState.apply(move);
+		
+		ReversiTools.applyMove(currentState.getBoard(), playerID, move);
+		currentState.switchCurrentPlayer();
 		
 		ReversiTools.printGameState(currentState);
 		
+		System.out.println("Getting minimax");
+		Move moveToPlay = ReversiTools.getMoveMinimax(currentState, 5);
+		System.out.println("Got minimax");
 		
-		
-		// - Décider quel coup jouer (alpha-beta!!)
-		// - Remettre à jour votre représentation du jeu
-		// - Retourner le coup choisi
-		// Mais ici, on se contente de lire à la console:
-		/*
-		Move result = null;
-		if (move != null) System.out.println("Coup adverse: " + move.i + ", " + move.j);
-		System.out.println("Votre coup: ");
-		System.out.print("Colonne (-1 si aucun coup possible): ");
-		int i = stdin.nextInt();
-		if (i != -1)
+		if (moveToPlay != null)
 			{
-			System.out.print("Ligne: ");
-			int j = stdin.nextInt();
-			result = new Move(i, j);
+			System.out.println("Machine : [" + moveToPlay.i + "][" + moveToPlay.j + "]");
 			}
-		*/
-		ArrayList<Move> listMoves = ReversiTools.getValidMoves(ReversiTools.flippedValue(playerID), currentState);
-		Move someMove = listMoves.get(0);
 		
-		Move result = someMove;
+		ReversiTools.applyMove(currentState.getBoard(), ReversiTools.flippedValue(playerID), moveToPlay);
+		currentState.switchCurrentPlayer();
 		
-		System.out.println("Machine : [" + result.i + "][" + result.j + "]");
-
-		
-		ReversiTools.applyMove(currentState.getBoard(), ReversiTools.flippedValue(playerID), result);
 		ReversiTools.printGameState(currentState);
+		//TODO check if null
+		ReversiTools.fixMove(moveToPlay);
 		
-		ReversiTools.fixMove(result);
+		//TODO if we do not have a move to play ... 
 		
-		return result;
-		//return new Move();
+		return moveToPlay;
 		}
 	
 	/*------------------------------------------------------------------*\
@@ -95,4 +83,3 @@ public class Joueur extends Othello.Joueur
 	\*------------------------------------------------------------------*/
 	private GameState currentState;
 	}
-

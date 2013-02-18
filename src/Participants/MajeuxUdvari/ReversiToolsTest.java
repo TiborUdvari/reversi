@@ -47,7 +47,7 @@ public class ReversiToolsTest
 		
 		boardSmall[2][1] = GameState.RED;
 		
-		gameState = new GameState();
+		gameState = new GameState(GameState.RED, GameState.RED);
 		
 		boardSmallScenario = new int[5][5];
 		

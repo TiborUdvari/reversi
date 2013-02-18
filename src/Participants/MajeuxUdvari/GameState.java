@@ -17,23 +17,17 @@ public class GameState
 	|*							Constructeurs							*|
 	\*------------------------------------------------------------------*/
 	
-	public GameState()
+	public GameState(int currentPlayer, int ourPlayer)
 		{
-		this(GameState.RED);
+		this(currentPlayer, createStandardBoard(), ourPlayer);
 		}
 	
-	public GameState(int currentPlayer)
-		{
-		this(currentPlayer, createStandardBoard(), null);
-		}
-	
-	public GameState(int currentPlayer, int[][] board, Move originatingMove)
+	public GameState(int currentPlayer, int[][] board, int ourPlayer)
 		{
 		this.currentPlayer = currentPlayer;
 		this.board = board;
-		
+		this.ourPlayer = ourPlayer;
 		this.moves = 0;
-		this.originatingMove = originatingMove;
 		}
 	
 	private static int[][] createStandardBoard()
@@ -56,11 +50,23 @@ public class GameState
 		return standardBoard;
 		}
 	
+	/**
+	 * Returns a deep copy of our Game State object
+	 */
 	@Override
 	protected Object clone() throws CloneNotSupportedException
 		{
-		GameState clonedState = new GameState(currentPlayer, ReversiTools.deepCopy2DRegularArray(board), new Move(originatingMove.i, originatingMove.j));
+		GameState clonedState = new GameState(currentPlayer, ReversiTools.deepCopy2DRegularArray(board), ourPlayer);
 		return clonedState;
+		}
+	
+	/*------------------------------------------------------------------*\
+	|*							Methodes Public							*|
+	\*------------------------------------------------------------------*/
+	
+	public void switchCurrentPlayer()
+		{
+		currentPlayer = ReversiTools.flippedValue(currentPlayer);
 		}
 	
 	/*------------------------------------------------------------------*\
@@ -82,7 +88,7 @@ public class GameState
 		
 		for(int i = 0; i < board.length; i++)
 			{
-			for(int j = 0; j <= board[i].length; j++)
+			for(int j = 0; j < board[i].length; j++)
 				{
 				switch(board[i][j])
 					{
@@ -98,10 +104,13 @@ public class GameState
 				}
 			}
 		
-		int eval = currentPlayer == GameState.RED ? red - blue : blue - red;
+		int eval = ourPlayer == GameState.RED ? red - blue : blue - red;
 		
 		return eval;
 		}
+	
+	
+	
 	
 	/**
 	 * Returns if the game is finished
@@ -113,7 +122,7 @@ public class GameState
 	public boolean isFinal()
 		{
 		//TODO check case where both players can not move
-		return moves == MAX_MOVES;
+		return moves == MAX_MOVES || this.getOperators().size() == 0;
 		}
 	
 	/**
@@ -144,9 +153,15 @@ public class GameState
 			e.printStackTrace();
 			}
 		
+		ReversiTools.applyMove(result, currentPlayer, move);
+		result.switchCurrentPlayer();
+		
 		return result;
 		}
 	
+	/*------------------------------*\
+	|*				Get				*|
+	\*------------------------------*/
 	public int[][] getBoard()
 		{
 		return this.board;
@@ -157,16 +172,22 @@ public class GameState
 		return moves;
 		}
 	
+	/*------------------------------*\
+	|*				Set				*|
+	\*------------------------------*/
+	
 	public void setMoves(int moves)
 		{
 		this.moves = moves;
 		}
 	
+	
+	//Colors
 	public static final int RED = 0;
 	public static final int BLUE = 1;
 	public static final int EMPTY = 2;
-	//Directions 
 	
+	//Directions 
 	public final static Move dirUp = new Move(0, -1);
 	public final static Move dirDown = new Move(0, 1);
 	public final static Move dirRight = new Move(1, 0);
@@ -184,7 +205,7 @@ public class GameState
 	public int[][] board;
 	private int currentPlayer;
 	private int moves;
-	private Move originatingMove;
+	private int ourPlayer;
 	
 	//Constants 
 	private static final int MAX_MOVES = 60; // for quick checking of eval function
